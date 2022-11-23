@@ -11,22 +11,18 @@ it('picks a country using the dropdown', () => {
     .eq(7)
     .find('img')
     .should('have.attr', 'title' /*, 'Great Britain'*/)
-    .as('currentCountry')
+    .then((country) => {
+      return country === 'Great Britain' ? 'France' : 'Great Britain'
+    })
+    .as('country')
   cy.get('tbody tr').eq(1).find('td').eq(7).find('img').click()
   cy.get('td#grid_active_cell .k-picker').click()
   cy.get('ul[role=listbox]')
     .should('be.visible')
     .find('li')
     .should('have.length.greaterThan', 2)
-  cy.get('@currentCountry').then((currentCountry) => {
-    let newCountry = 'Italy'
-    if (currentCountry === 'France') {
-      newCountry = 'Italy'
-    } else {
-      newCountry = 'France'
-    }
-
-    cy.contains('ul[role=listbox] li', newCountry).click()
+  cy.get('@country').then((country) => {
+    cy.contains('ul[role=listbox] li', country).click()
 
     cy.get('ul[role=listbox]').should('not.exist')
     cy.get('tbody tr')
@@ -34,6 +30,6 @@ it('picks a country using the dropdown', () => {
       .find('td')
       .eq(7)
       .find('img')
-      .should('have.attr', 'title', newCountry)
+      .should('have.attr', 'title', country)
   })
 })
